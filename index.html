@@ -101,7 +101,7 @@
 
         function sendToSheet() {
             const data = collectData();
-            fetch("https://script.google.com/macros/s/AKfycbzqibVGgPMGOFSryCRq8AIoNdTMRiXZgLOuVW4EZGbw9cYrFbMXOjz1CC9tnYNY8gY/exec", {
+            fetch("https://script.google.com/macros/s/AKfycbzMbSUnTQKwtsvKC55dR7Ch9dz3VVrWtitBMut4I1pOv1OlBje8wOA-4PqYv7g-4LjCFg/exec", {
                 method: "POST",
                 body: JSON.stringify(data),
                 headers: { "Content-Type": "application/json" }
