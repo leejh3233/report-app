@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>시공보고서 작성</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {{ font-family: sans-serif; padding: 20px; }}
+    label {{ display: block; margin-top: 10px; }}
+    input, select, textarea {{ width: 100%; padding: 8px; margin-top: 5px; }}
+    button {{ margin-top: 20px; padding: 10px; width: 100%; }}
+  </style>
+</head>
+<body>
+  <h2>시공보고서 작성</h2>
+  <form id="reportForm">
+    <label>시공팀원 <input type="text" name="시공팀원" required></label>
+    <label>시공일 <input type="date" name="시공일" required></label>
+    <label>작업시간 <input type="text" name="작업시간" required></label>
+    <label>지역 <input type="text" name="지역" required></label>
+    <label>아파트명 <input type="text" name="아파트명" required></label>
+    <label>평수 <input type="text" name="평수" required></label>
+    <label>신축여부 <input type="text" name="신축여부" required></label>
+    <label>결제방법 <input type="text" name="결제방법" required></label>
+    <label>색상
+      <select name="색상">
+        <option value="모던">모던</option>
+        <option value="마블">마블</option>
+        <option value="우드">우드</option>
+      </select>
+    </label>
+    <label>판매갯수 <input type="text" name="판매갯수" required></label>
+    <label>판매비용 <input type="text" name="판매비용" required></label>
+    <label>미결제금액 <input type="text" name="미결제금액"></label>
+    <label>시공범위 <input type="text" name="시공범위"></label>
+    <label>예약금현금영수증 <input type="text" name="예약금현금영수증"></label>
+    <label>기타 <textarea name="기타"></textarea></label>
+    <button type="submit">보고서 복사 및 저장</button>
+  </form>
+  <script>
+    document.getElementById("reportForm").addEventListener("submit", async function (e) {{
+      e.preventDefault();
+      const form = e.target;
+      const data = {{}};
+      [...form.elements].forEach((el) => {{
+        if (el.name) data[el.name] = el.value;
+      }});
+
+      // 보고서 텍스트 생성
+      let text = "시공 보고서\n";
+      Object.entries(data).forEach(([key, val], idx) => {{
+        text += `${{idx + 1}}. ${{key}} : ${{val}}\n`;
+      }});
+
+      try {{
+        await navigator.clipboard.writeText(text);
+        alert("카톡 보고서 복사 완료!");
+      }} catch (err) {{
+        alert("복사 실패: " + err);
+      }}
+
+      // Google Apps Script POST
+      fetch("https://script.google.com/macros/s/YOUR_DEPLOYED_GAS_URL_HERE/exec", {{
+        method: "POST",
+        mode: "no-cors",
+        headers: {{ "Content-Type": "application/json" }},
+        body: JSON.stringify(data),
+      }});
+    }});
+  </script>
+</body>
+</html>
