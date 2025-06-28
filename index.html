@@ -1,113 +1,102 @@
 
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
+    <title>시공보고서 작성</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>시공보고서</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; background: #f9f9f9; }
-        label { font-weight: bold; display: block; margin-top: 10px; }
-        input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
-        button { padding: 10px 15px; margin-top: 15px; margin-right: 10px; border: none; border-radius: 5px; cursor: pointer; }
-        .result-box { white-space: pre-line; background: #fff; padding: 15px; margin-top: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        body { font-family: sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        input, select, button { width: 100%; margin: 8px 0; padding: 10px; font-size: 16px; }
+        textarea { width: 100%; height: 150px; margin-top: 10px; padding: 10px; }
+        button { cursor: pointer; }
     </style>
 </head>
 <body>
-    <h2>시공보고서 작성</h2>
-    <label>1. 시공팀원</label><input id="team" />
-    <label>2. 작업시간</label><input id="time" />
-    <label>3. 지역</label><input id="region" />
-    <label>4. 아파트명</label><input id="apt" />
-    <label>5. 평수</label><input id="size" />
-    <label>6. 신축여부</label><input id="new" />
-    <label>7. 결제방법</label><input id="pay" />
-    <label>8. 색상</label>
+    <h2>시공보고서</h2>
+    <input id="teamMember" placeholder="1. 시공팀원">
+    <input id="workTime" placeholder="2. 작업시간">
+    <input id="location" placeholder="3. 지역">
+    <input id="apartment" placeholder="4. 아파트명">
+    <input id="size" placeholder="5. 평 수">
+    <input id="newOrNot" placeholder="6. 신축여부">
+    <input id="payment" placeholder="7. 결제방법">
     <select id="color">
-        <option value="모던">모던</option>
-        <option value="마블">마블</option>
-        <option value="우드">우드</option>
+        <option value="모던">8. 색상 - 모던</option>
+        <option value="마블">8. 색상 - 마블</option>
+        <option value="우드">8. 색상 - 우드</option>
     </select>
-    <label>9. 판매갯수</label><input id="count" />
-    <label>10. 판매비용</label><input id="price" />
-    <label>11. 미결제금액</label><input id="remain" />
-    <label>12. 시공범위</label><input id="range" />
-    <label>13. 예약금 현금영수증</label><input id="receipt" />
-    <label>14. 기타</label><input id="memo" />
+    <input id="quantity" placeholder="9. 판매갯수">
+    <input id="price" placeholder="10. 판매비용">
+    <input id="unpaid" placeholder="11. 미결제금액">
+    <input id="scope" placeholder="12. 시공범위">
+    <input id="receipt" placeholder="13. 예약금 현금영수증">
+    <input id="extra" placeholder="14. 기타">
 
-    <button onclick="generateReport()">📝 결과 보기</button>
-    <button onclick="copyReport()">📋 복사하기</button>
-    <button onclick="sendToSheet()">📤 엑셀 시트 전송</button>
+    <button onclick="copyReport()">📋 보고서 복사하기</button>
+    <button onclick="submitData()">📤 엑셀 시트로 전송</button>
 
-    <div class="result-box" id="result"></div>
+    <textarea id="reportOutput" readonly placeholder="보고서 결과가 여기에 표시됩니다."></textarea>
 
     <script>
-        function today() {
-            const d = new Date();
-            return d.toISOString().split('T')[0].replace(/-/g, '');
-        }
-
-        function collectData() {
-            return {
-                "시공팀원": document.getElementById("team").value,
-                "시공일": today(),
-                "작업시간": document.getElementById("time").value,
-                "지역": document.getElementById("region").value,
-                "아파트명": document.getElementById("apt").value,
-                "평수": document.getElementById("size").value,
-                "신축여부": document.getElementById("new").value,
-                "결제방법": document.getElementById("pay").value,
-                "색상": document.getElementById("color").value,
-                "판매갯수": document.getElementById("count").value,
-                "판매비용": document.getElementById("price").value,
-                "미결제금액": document.getElementById("remain").value,
-                "시공범위": document.getElementById("range").value,
-                "예약금현금영수증": document.getElementById("receipt").value,
-                "기타": document.getElementById("memo").value
-            };
-        }
-
-        function generateReport() {
-            const d = collectData();
-            const result = 
-`시공보고서
-1. 시공일 : ${d["시공일"]}
-2. 작업시간 : ${d["작업시간"]}
-3. 고객정보 : 
-    1. 지역 : ${d["지역"]}
-    2. 아파트명 : ${d["아파트명"]}
-    3. 평 수 : ${d["평수"]}
-    4. 신축여부 : ${d["신축여부"]}
-4. 결제방법 : ${d["결제방법"]}
-5. 색상 : ${d["색상"]}
-6. 판매갯수 : ${d["판매갯수"]}
-7. 판매비용 : ${d["판매비용"]}
-8. 미결제 금액 : ${d["미결제금액"]}
-9. 시공범위 : ${d["시공범위"]}
-10. 예약금 현금영수증 : ${d["예약금현금영수증"]}
-11. 기타 : ${d["기타"]}`;
-            document.getElementById("result").innerText = result;
+        function buildReport() {
+            return `시공일 : ${new Date().toLocaleDateString()}\n` +
+                `1. 시공팀원 : ${document.getElementById("teamMember").value}\n` +
+                `2. 작업시간 : ${document.getElementById("workTime").value}\n` +
+                `3. 지역 : ${document.getElementById("location").value}\n` +
+                `4. 아파트명 : ${document.getElementById("apartment").value}\n` +
+                `5. 평 수 : ${document.getElementById("size").value}\n` +
+                `6. 신축여부 : ${document.getElementById("newOrNot").value}\n` +
+                `7. 결제방법 : ${document.getElementById("payment").value}\n` +
+                `8. 색상 : ${document.getElementById("color").value}\n` +
+                `9. 판매갯수 : ${document.getElementById("quantity").value}\n` +
+                `10. 판매비용 : ${document.getElementById("price").value}\n` +
+                `11. 미결제금액 : ${document.getElementById("unpaid").value}\n` +
+                `12. 시공범위 : ${document.getElementById("scope").value}\n` +
+                `13. 예약금 현금영수증 : ${document.getElementById("receipt").value}\n` +
+                `14. 기타 : ${document.getElementById("extra").value}`;
         }
 
         function copyReport() {
-            const text = document.getElementById("result").innerText;
-            if (text.trim()) {
-                navigator.clipboard.writeText(text);
-                alert("복사 완료!");
-            } else {
-                alert("먼저 결과보기를 눌러주세요.");
-            }
+            const report = buildReport();
+            document.getElementById("reportOutput").value = report;
+            navigator.clipboard.writeText(report).then(() => {
+                alert("✅ 보고서가 복사되었습니다!");
+            });
         }
 
-        function sendToSheet() {
-            const data = collectData();
-            fetch("https://script.google.com/macros/s/AKfycbzMbSUnTQKwtsvKC55dR7Ch9dz3VVrWtitBMut4I1pOv1OlBje8wOA-4PqYv7g-4LjCFg/exec", {
+        function submitData() {
+            const data = {
+                date: new Date().toLocaleDateString(),
+                teamMember: document.getElementById('teamMember').value,
+                workTime: document.getElementById('workTime').value,
+                location: document.getElementById('location').value,
+                apartment: document.getElementById('apartment').value,
+                size: document.getElementById('size').value,
+                newOrNot: document.getElementById('newOrNot').value,
+                payment: document.getElementById('payment').value,
+                color: document.getElementById('color').value,
+                quantity: document.getElementById('quantity').value,
+                price: document.getElementById('price').value,
+                unpaid: document.getElementById('unpaid').value,
+                scope: document.getElementById('scope').value,
+                receipt: document.getElementById('receipt').value,
+                extra: document.getElementById('extra').value
+            };
+
+            fetch("YOUR_SCRIPT_URL", {
                 method: "POST",
-                body: JSON.stringify(data),
-                headers: { "Content-Type": "application/json" }
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
             })
-            .then(res => res.text())
-            .then(txt => alert("엑셀 시트 전송 결과: " + txt));
+            .then(response => response.text())
+            .then(result => {
+                alert("✅ 엑셀 시트로 전송이 완료되었습니다!");
+            })
+            .catch(error => {
+                alert("❌ 전송 실패");
+                console.error(error);
+            });
         }
     </script>
 </body>
