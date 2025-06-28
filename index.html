@@ -2,90 +2,113 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>시공보고서 작성</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    label { display: block; margin-top: 20px; font-weight: bold; }
-    input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-    button { margin-top: 20px; padding: 12px; width: 100%; font-weight: bold; border-radius: 5px; }
-    pre { background: #f9f9f9; padding: 15px; margin-top: 30px; white-space: pre-wrap; border-radius: 5px; border: 1px solid #ddd; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>시공보고서</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; background: #f9f9f9; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 15px; margin-top: 15px; margin-right: 10px; border: none; border-radius: 5px; cursor: pointer; }
+        .result-box { white-space: pre-line; background: #fff; padding: 15px; margin-top: 20px; border: 1px solid #ccc; border-radius: 5px; }
+    </style>
 </head>
 <body>
-  <h2>시공보고서 작성</h2>
-  <form id="reportForm">
-    <label>1. 시공팀원 <input type="text" name="시공팀원" required></label>
-    <label>2. 시공일 <input type="date" name="시공일" required></label>
-    <label>3. 작업시간 <input type="text" name="작업시간" required></label>
-    <label>4. 지역 <input type="text" name="지역" required></label>
-    <label>5. 아파트명 <input type="text" name="아파트명" required></label>
-    <label>6. 평수 <input type="text" name="평수" required></label>
-    <label>7. 신축여부 <input type="text" name="신축여부" required></label>
-    <label>8. 결제방법 <input type="text" name="결제방법" required></label>
-    <label>9. 색상
-      <select name="색상">
+    <h2>시공보고서 작성</h2>
+    <label>1. 시공팀원</label><input id="team" />
+    <label>2. 작업시간</label><input id="time" />
+    <label>3. 지역</label><input id="region" />
+    <label>4. 아파트명</label><input id="apt" />
+    <label>5. 평수</label><input id="size" />
+    <label>6. 신축여부</label><input id="new" />
+    <label>7. 결제방법</label><input id="pay" />
+    <label>8. 색상</label>
+    <select id="color">
         <option value="모던">모던</option>
         <option value="마블">마블</option>
         <option value="우드">우드</option>
-      </select>
-    </label>
-    <label>10. 판매갯수 <input type="text" name="판매갯수" required></label>
-    <label>11. 판매비용 <input type="text" name="판매비용" required></label>
-    <label>12. 미결제금액 <input type="text" name="미결제금액"></label>
-    <label>13. 시공범위 <input type="text" name="시공범위"></label>
-    <label>14. 예약금현금영수증 <input type="text" name="예약금현금영수증"></label>
-    <label>15. 기타 <textarea name="기타"></textarea></label>
-    <button type="button" onclick="generateReport()">📋 보고서 생성</button>
-    <button type="button" onclick="copyReport()">📎 카톡 보고서 복사</button>
-    <button type="submit">📤 엑셀 시트 전송</button>
-  </form>
+    </select>
+    <label>9. 판매갯수</label><input id="count" />
+    <label>10. 판매비용</label><input id="price" />
+    <label>11. 미결제금액</label><input id="remain" />
+    <label>12. 시공범위</label><input id="range" />
+    <label>13. 예약금 현금영수증</label><input id="receipt" />
+    <label>14. 기타</label><input id="memo" />
 
-  <h3>📝 생성된 보고서</h3>
-  <pre id="reportOutput">아직 보고서가 없습니다.</pre>
+    <button onclick="generateReport()">📝 결과 보기</button>
+    <button onclick="copyReport()">📋 복사하기</button>
+    <button onclick="sendToSheet()">📤 엑셀 시트 전송</button>
 
-  <script>
-    let currentReportText = "";
+    <div class="result-box" id="result"></div>
 
-    function generateReport() {
-      const form = document.getElementById("reportForm");
-      const data = {};
-      [...form.elements].forEach((el) => {
-        if (el.name) data[el.name] = el.value;
-      });
-      let text = "시공 보고서\n";
-      let count = 1;
-      Object.entries(data).forEach(([key, val]) => {
-        text += `${count++}. ${key} : ${val}\n\n`;
-      });
-      document.getElementById("reportOutput").textContent = text;
-      currentReportText = text;
-    }
+    <script>
+        function today() {
+            const d = new Date();
+            return d.toISOString().split('T')[0].replace(/-/g, '');
+        }
 
-    function copyReport() {
-      if (!currentReportText) generateReport();
-      navigator.clipboard.writeText(currentReportText).then(() => {
-        alert("카톡 보고서 복사 완료!");
-      });
-    }
+        function collectData() {
+            return {
+                "시공팀원": document.getElementById("team").value,
+                "시공일": today(),
+                "작업시간": document.getElementById("time").value,
+                "지역": document.getElementById("region").value,
+                "아파트명": document.getElementById("apt").value,
+                "평수": document.getElementById("size").value,
+                "신축여부": document.getElementById("new").value,
+                "결제방법": document.getElementById("pay").value,
+                "색상": document.getElementById("color").value,
+                "판매갯수": document.getElementById("count").value,
+                "판매비용": document.getElementById("price").value,
+                "미결제금액": document.getElementById("remain").value,
+                "시공범위": document.getElementById("range").value,
+                "예약금현금영수증": document.getElementById("receipt").value,
+                "기타": document.getElementById("memo").value
+            };
+        }
 
-    document.getElementById("reportForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      generateReport(); // 시트 전송 전에도 업데이트
-      const form = e.target;
-      const data = {};
-      [...form.elements].forEach((el) => {
-        if (el.name) data[el.name] = el.value;
-      });
-      fetch("https://script.google.com/macros/s/https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyrOX1-5qDzqeldfkAvf3AunBevZ6KnPB8keq9WGhRnuFCiLy_e5exI0OheE2u-JuLvXw/exec/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      alert("엑셀 시트로 전송 완료!");
-    });
-  </script>
+        function generateReport() {
+            const d = collectData();
+            const result = 
+`시공보고서
+1. 시공일 : ${d["시공일"]}
+2. 작업시간 : ${d["작업시간"]}
+3. 고객정보 : 
+    1. 지역 : ${d["지역"]}
+    2. 아파트명 : ${d["아파트명"]}
+    3. 평 수 : ${d["평수"]}
+    4. 신축여부 : ${d["신축여부"]}
+4. 결제방법 : ${d["결제방법"]}
+5. 색상 : ${d["색상"]}
+6. 판매갯수 : ${d["판매갯수"]}
+7. 판매비용 : ${d["판매비용"]}
+8. 미결제 금액 : ${d["미결제금액"]}
+9. 시공범위 : ${d["시공범위"]}
+10. 예약금 현금영수증 : ${d["예약금현금영수증"]}
+11. 기타 : ${d["기타"]}`;
+            document.getElementById("result").innerText = result;
+        }
+
+        function copyReport() {
+            const text = document.getElementById("result").innerText;
+            if (text.trim()) {
+                navigator.clipboard.writeText(text);
+                alert("복사 완료!");
+            } else {
+                alert("먼저 결과보기를 눌러주세요.");
+            }
+        }
+
+        function sendToSheet() {
+            const data = collectData();
+            fetch("https://script.google.com/macros/s/AKfycbzqibVGgPMGOFSryCRq8AIoNdTMRiXZgLOuVW4EZGbw9cYrFbMXOjz1CC9tnYNY8gY/exec", {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(res => res.text())
+            .then(txt => alert("엑셀 시트 전송 결과: " + txt));
+        }
+    </script>
 </body>
 </html>
