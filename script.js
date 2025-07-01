@@ -8,7 +8,7 @@ function generateReport() {
   const form = document.getElementById("reportForm");
   const data = new FormData(form);
   const labels = [
-    "시공일자", "시공팀원", "지역", "아파트명", "동 호수", "연락처",
+    "시공일자", "시공팀원", "지역", "아파트명", "동호수", "연락처",
     "평수", "시공범위", "신축여부", "결제방법", "색상",
     "판매갯수", "판매비용", "미결제금액", "예약금현금영수증", "특이사항"
   ];
