@@ -10,7 +10,7 @@ function generateReport() {
   const labels = [
     "시공일자", "시공팀원", "지역", "아파트명", "동 호수", "연락처",
     "평수", "시공범위", "신축여부", "결제방법", "색상",
-    "판매갯수", "판매비용", "미결제금액", "예약금 현금영수증", "특이사항"
+    "판매갯수", "판매비용", "미결제금액", "예약금현금영수증", "특이사항"
   ];
   let text = "📋 시공보고서\n";
   text += `1. 시공일자 : ${getToday()}\n`;
@@ -34,7 +34,7 @@ function sendToSheet() {
     obj[key] = value;
   }
 
-  fetch("https://script.google.com/macros/s/AKfycbx-mAhiZzNQqwyzoNAcBU2RrBYv33-aoih2VLAgCg8NF2FTnWYNwkRFmmMVrnO0MQ45/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbyNWquyU_4ydior9M3Q6BuiX-F4AhosllENxnOrhqMVwhsEDZVu4iQT6Imx7rP7M97l/exec", {
     method: "POST",
     mode: "no-cors",
     headers: { "Content-Type": "application/json" },
