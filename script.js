@@ -1,9 +1,4 @@
 
-function getToday() {
-  const today = new Date();
-  return today.toISOString().split('T')[0].replace(/-/g, '');
-}
-
 function generateReport() {
   const form = document.getElementById("reportForm");
   const data = new FormData(form);
@@ -13,9 +8,8 @@ function generateReport() {
     "판매갯수", "판매비용", "미결제금액", "예약금현금영수증", "특이사항"
   ];
   let text = "📋 시공보고서\n";
-  text += `1. 시공일자 : ${getToday()}\n`;
-  labels.slice(1).forEach((label, i) => {
-    text += `${i + 2}. ${label} : ${data.get(label)}\n`;
+  labels.forEach((label, i) => {
+    text += `${i + 1}. ${label} : ${data.get(label)}\n`;
   });
   document.getElementById("result").innerText = text;
 }
@@ -29,12 +23,11 @@ function sendToSheet() {
   const form = document.getElementById("reportForm");
   const data = new FormData(form);
   const obj = {};
-  obj["시공일자"] = getToday();
   for (let [key, value] of data.entries()) {
     obj[key] = value;
   }
 
-  fetch("https://script.google.com/macros/s/AKfycbyNWquyU_4ydior9M3Q6BuiX-F4AhosllENxnOrhqMVwhsEDZVu4iQT6Imx7rP7M97l/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbzITllVlYaPqmfoT7eVPd1nSDl31uiaQFO9VFILQeBo_swAUNScMOKM_F_c9iz7TbKI/exec", {
     method: "POST",
     mode: "no-cors",
     headers: { "Content-Type": "application/json" },
