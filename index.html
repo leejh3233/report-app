@@ -3,22 +3,47 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>시공보고서 입력폼</title>
-    <script defer src="script.js"></script>
+    <title>시공보고서 작성</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
         h2 { text-align: center; }
-        textarea, input, select { width: 100%; margin-bottom: 10px; padding: 8px; font-size: 16px; }
-        button { margin-right: 10px; padding: 10px 15px; font-size: 16px; }
-        #result { white-space: pre-line; background: #f0f0f0; padding: 10px; margin-top: 20px; border-radius: 5px; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        textarea, input[type="text"] {
+            width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box;
+        }
+        button {
+            margin-top: 15px; padding: 10px 20px;
+            font-size: 16px; cursor: pointer;
+        }
+        #resultBox { white-space: pre-line; background: #fff; padding: 10px; border: 1px solid #ccc; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h2>시공보고서 입력폼</h2>
-    <div id="form-container"></div>
-    <button onclick="generateReport()">결과 보기</button>
-    <button onclick="copyResult()">복사하기</button>
-    <button onclick="sendToSheet()">엑셀시트 보내기</button>
-    <div id="result"></div>
+    <h2>시공보고서 작성</h2>
+    <form id="reportForm">
+        <label>1. 시공팀원<input type="text" name="team" /></label>
+        <label>2. 지역<input type="text" name="region" /></label>
+        <label>3. 아파트명<input type="text" name="apt" /></label>
+        <label>4. 동 호수<input type="text" name="unit" /></label>
+        <label>5. 연락처<input type="text" name="phone" /></label>
+        <label>6. 평수<input type="text" name="area" /></label>
+        <label>7. 시공범위<input type="text" name="range" /></label>
+        <label>8. 신축여부<input type="text" name="newbuild" /></label>
+        <label>9. 결제방법<input type="text" name="payment" /></label>
+        <label>10. 색상<input type="text" name="color" /></label>
+        <label>11. 판매갯수<input type="text" name="quantity" /></label>
+        <label>12. 판매비용<input type="text" name="cost" /></label>
+        <label>13. 미결제금액<input type="text" name="unpaid" /></label>
+        <label>14. 예약금 현금영수증<input type="text" name="receipt" /></label>
+        <label>15. 특이사항<input type="text" name="etc" /></label>
+
+        <button type="button" onclick="showResult()">📋 결과 보기</button>
+        <button type="button" onclick="copyResult()">📋 복사하기</button>
+        <button type="button" onclick="sendToSheet()">📤 엑셀시트 보내기</button>
+    </form>
+
+    <div id="resultBox"></div>
+
+    <script src="script.js"></script>
 </body>
 </html>

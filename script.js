@@ -1,33 +1,31 @@
 
-function generateResult() {
-  const form = document.getElementById('report-form');
-  let result = "📋 시공보고서\n";
-  let count = 1;
-  Array.from(form.elements).forEach((el) => {
-    if (el.name && el.value) {
-      result += `${count}. ${el.name} : ${el.value}\n`;
-      count++;
+function showResult() {
+    const form = document.getElementById('reportForm');
+    const data = new FormData(form);
+    let result = '📋 시공보고서\n';
+    let i = 1;
+    for (let [key, value] of data.entries()) {
+        if (value.trim() !== '') {
+            result += i + '. ' + form[key].previousSibling.textContent.trim() + ' : ' + value + '\n';
+        }
+        i++;
     }
-  });
-  document.getElementById('result').textContent = result.trim();
+    document.getElementById('resultBox').innerText = result.trim();
 }
 
 function copyResult() {
-  const resultText = document.getElementById('result').textContent;
-  navigator.clipboard.writeText(resultText).then(() => {
-    alert("복사 완료!");
-  });
+    const text = document.getElementById('resultBox').innerText;
+    navigator.clipboard.writeText(text).then(() => alert('복사되었습니다.'));
 }
 
 function sendToSheet() {
-  const resultText = document.getElementById('result').textContent;
-  fetch("YOUR_DEPLOYED_URL", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "text=" + encodeURIComponent(resultText)
-  })
-  .then(res => res.text())
-  .then(res => {
-    alert("엑셀시트 전송 완료!");
-  });
+    const text = document.getElementById('resultBox').innerText;
+    fetch("YOUR_DEPLOYED_URL", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "text=" + encodeURIComponent(text)
+    })
+    .then(res => res.text())
+    .then(data => alert("엑셀시트 전송 완료"))
+    .catch(err => alert("전송 실패: " + err));
 }
