@@ -1,8 +1,12 @@
 
 function showResult() {
-  const input = document.getElementById("input").value.split("\n");
-  const formatted = input.map((line, i) => `${i + 1}. ${line}`).join("\n");
-  document.getElementById("output").textContent = formatted;
+  const form = document.forms["reportForm"];
+  const labels = [
+    "시공팀원", "지역", "아파트명", "동 호수", "연락처", "평수", "시공범위", "신축여부",
+    "결제방법", "색상", "판매갯수", "판매비용", "미결제금액", "예약금 현금영수증", "특이사항"
+  ];
+  const output = labels.map((label, i) => `${i + 1}. ${label}: ${form[i].value}`).join("\n");
+  document.getElementById("output").textContent = output;
 }
 
 function copyResult() {

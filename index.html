@@ -4,14 +4,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>시공보고서 작성</title>
+  <title>시공보고서 입력</title>
 </head>
 <body>
   <h1>시공보고서 작성</h1>
-  <textarea id="input" rows="20" cols="60" placeholder="1. 시공팀원
-2. 지역
-...15. 특이사항
-"></textarea><br/>
+  <form id="reportForm">
+    <div><label>1. 시공팀원: <input type="text" name="team"/></label></div>
+    <div><label>2. 지역: <input type="text" name="region"/></label></div>
+    <div><label>3. 아파트명: <input type="text" name="apt"/></label></div>
+    <div><label>4. 동 호수: <input type="text" name="unit"/></label></div>
+    <div><label>5. 연락처: <input type="text" name="phone"/></label></div>
+    <div><label>6. 평수: <input type="text" name="size"/></label></div>
+    <div><label>7. 시공범위: <input type="text" name="scope"/></label></div>
+    <div><label>8. 신축여부: <input type="text" name="new"/></label></div>
+    <div><label>9. 결제방법: <input type="text" name="pay"/></label></div>
+    <div><label>10. 색상: <input type="text" name="color"/></label></div>
+    <div><label>11. 판매갯수: <input type="text" name="count"/></label></div>
+    <div><label>12. 판매비용: <input type="text" name="price"/></label></div>
+    <div><label>13. 미결제금액: <input type="text" name="unpaid"/></label></div>
+    <div><label>14. 예약금 현금영수증: <input type="text" name="receipt"/></label></div>
+    <div><label>15. 특이사항: <input type="text" name="note"/></label></div>
+  </form><br/>
   <button onclick="showResult()">결과 보기</button>
   <button onclick="copyResult()">복사하기</button>
   <button onclick="sendToSheet()">엑셀시트 보내기</button>
