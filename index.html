@@ -2,144 +2,22 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
     <title>시공보고서 작성</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-        label { display: block; margin-top: 10px; }
-        textarea, input, select { width: 100%; padding: 8px; margin-top: 5px; }
-        button { margin-top: 15px; padding: 10px; width: 100%; font-weight: bold; }
-        .result { white-space: pre-wrap; background: #f4f4f4; padding: 10px; margin-top: 15px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>시공보고서 작성</h2>
-
-    <label>1. 시공팀원</label>
-    <input type="text" id="teamMember">
-
-    <label>2. 작업시간</label>
-    <input type="text" id="workTime">
-
-    <label>3. 지역</label>
-    <input type="text" id="location">
-
-    <label>4. 아파트명</label>
-    <input type="text" id="apartment">
-
-    <label>5. 평 수</label>
-    <input type="text" id="size">
-
-    <label>6. 신축여부</label>
-    <input type="text" id="newOrNot">
-
-    <label>7. 결제방법</label>
-    <input type="text" id="payment">
-
-    <label>8. 색상</label>
-    <select id="color">
-        <option value="모던">모던</option>
-        <option value="마블">마블</option>
-        <option value="우드">우드</option>
-    </select>
-
-    <label>9. 판매갯수</label>
-    <input type="text" id="quantity">
-
-    <label>10. 판매비용</label>
-    <input type="text" id="price">
-
-    <label>11. 미결제금액</label>
-    <input type="text" id="unpaid">
-
-    <label>12. 시공범위</label>
-    <input type="text" id="scope">
-
-    <label>13. 예약금 현금영수증</label>
-    <input type="text" id="receipt">
-
-    <label>14. 기타</label>
-    <input type="text" id="extra">
-
-    <button onclick="generateReport()">📋 결과 보기</button>
-    <button onclick="copyResult()">복사하기</button>
-    <button onclick="sendToSheet()">엑셀 시트 전송</button>
-
-    <div class="result" id="resultArea"></div>
-
-    <script>
-        const endpoint = "https://script.google.com/macros/s/AKfycbxtxy3sgN6uoe5d3bckcmkq41oBryjoXul9MvvaBU6NI_hOfZdGReWtmaArDSCQS8Ba/exec";
-
-        function generateReport() {
-            const teamMember = document.getElementById("teamMember").value;
-            const workTime = document.getElementById("workTime").value;
-            const location = document.getElementById("location").value;
-            const apartment = document.getElementById("apartment").value;
-            const size = document.getElementById("size").value;
-            const newOrNot = document.getElementById("newOrNot").value;
-            const payment = document.getElementById("payment").value;
-            const color = document.getElementById("color").value;
-            const quantity = document.getElementById("quantity").value;
-            const price = document.getElementById("price").value;
-            const unpaid = document.getElementById("unpaid").value;
-            const scope = document.getElementById("scope").value;
-            const receipt = document.getElementById("receipt").value;
-            const extra = document.getElementById("extra").value;
-
-            const result = 
-`시공 보고서
-1. 시공일 : ${new Date().toISOString().slice(0,10)}
-2. 작업시간 : ${workTime}
-3. 고객정보 : 
-   1. 지역 : ${location}
-   2. 아파트명 : ${apartment}
-   3. 평 수 : ${size}
-   4. 신축여부 : ${newOrNot}
-4. 결제방법 : ${payment}
-5. 색상 : ${color}
-6. 판매갯수 : ${quantity}
-7. 판매비용 : ${price}
-8. 미결제 금액 : ${unpaid}
-9. 시공범위 : ${scope}
-10. 예약금 현금영수증 : ${receipt}
-11. 기타 : ${extra}
-12. 시공팀원 : ${teamMember}`;
-
-            document.getElementById("resultArea").innerText = result;
-        }
-
-        function copyResult() {
-            const text = document.getElementById("resultArea").innerText;
-            navigator.clipboard.writeText(text).then(() => alert("복사 완료!"));
-        }
-
-        function sendToSheet() {
-            const data = {
-                teamMember: document.getElementById("teamMember").value,
-                workTime: document.getElementById("workTime").value,
-                location: document.getElementById("location").value,
-                apartment: document.getElementById("apartment").value,
-                size: document.getElementById("size").value,
-                newOrNot: document.getElementById("newOrNot").value,
-                payment: document.getElementById("payment").value,
-                color: document.getElementById("color").value,
-                quantity: document.getElementById("quantity").value,
-                price: document.getElementById("price").value,
-                unpaid: document.getElementById("unpaid").value,
-                scope: document.getElementById("scope").value,
-                receipt: document.getElementById("receipt").value,
-                extra: document.getElementById("extra").value
-            };
-
-            fetch(endpoint, {
-                method: "POST",
-                body: JSON.stringify(data)
-            })
-            .then(res => res.text())
-            .then(res => alert("엑셀 시트 전송 완료!"))
-            .catch(err => alert("전송 실패: " + err));
-        }
-    </script>
+    <h2>시공보고서 입력</h2>
+    <form id="reportForm">
+        <div id="inputFields"></div>
+        <button type="button" onclick="submitForm()">엑셀 시트 전송</button>
+        <button type="button" onclick="copyReport()">복사하기</button>
+    </form>
+    <div id="resultBox">
+        <h3>결과 보기</h3>
+        <pre id="resultText"></pre>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
