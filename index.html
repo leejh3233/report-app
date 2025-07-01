@@ -2,23 +2,20 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>시공보고서 작성</title>
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>시공보고서 작성</h1>
-    <form id="reportForm">
-      <textarea id="inputFields" placeholder="1. 시공팀원\n2. 지역\n3. 아파트명\n...\n15. 특이사항" rows="20"></textarea>
-      <div class="buttons">
-        <button type="button" onclick="showResult()">결과 보기</button>
-        <button type="button" onclick="copyToClipboard()">복사하기</button>
-        <button type="button" onclick="sendToSheet()">엑셀시트 보내기</button>
-      </div>
-      <div id="resultContainer"></div>
-    </form>
-  </div>
+  <h1>시공보고서 작성</h1>
+  <textarea id="input" rows="20" cols="60" placeholder="1. 시공팀원
+2. 지역
+...15. 특이사항
+"></textarea><br/>
+  <button onclick="showResult()">결과 보기</button>
+  <button onclick="copyResult()">복사하기</button>
+  <button onclick="sendToSheet()">엑셀시트 보내기</button>
+  <pre id="output"></pre>
   <script src="script.js"></script>
 </body>
 </html>
