@@ -29,13 +29,12 @@ function sendToSheet() {
   const form = document.getElementById("reportForm");
   const data = new FormData(form);
   const obj = {};
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5ztuy6evT00psxt4fZN6UsGg6JuUR71GIj0WzK35-_OD19wBzCh7TertpB62kstKk/exec';
   obj["시공일자"] = getToday();
   for (let [key, value] of data.entries()) {
     obj[key] = value;
   }
 
-  fetch("YOUR_SCRIPT_WEBAPP_URL", {
+  fetch("https://script.google.com/macros/s/AKfycbx-mAhiZzNQqwyzoNAcBU2RrBYv33-aoih2VLAgCg8NF2FTnWYNwkRFmmMVrnO0MQ45/exec", {
     method: "POST",
     mode: "no-cors",
     headers: { "Content-Type": "application/json" },

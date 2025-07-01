@@ -2,95 +2,39 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>시공보고서 작성</title>
-    <script>
-        async function sendToSheet() {
-            const formData = {
-                "시공일자": new Date().toISOString().split('T')[0],
-                "시공팀원": document.getElementById("시공팀원").value,
-                "지역": document.getElementById("지역").value,
-                "아파트명": document.getElementById("아파트명").value,
-                "동호수": document.getElementById("동호수").value,
-                "연락처": document.getElementById("연락처").value,
-                "평수": document.getElementById("평수").value,
-                "시공범위": document.getElementById("시공범위").value,
-                "신축여부": document.getElementById("신축여부").value,
-                "결제방법": document.getElementById("결제방법").value,
-                "색상": document.getElementById("색상").value,
-                "판매갯수": document.getElementById("판매갯수").value,
-                "판매비용": document.getElementById("판매비용").value,
-                "미결제금액": document.getElementById("미결제금액").value,
-                "예약금현금영수증": document.getElementById("예약금현금영수증").value,
-                "특이사항": document.getElementById("특이사항").value
-            };
-
-            const resultText = `📋 시공보고서
-1. 시공일자 : ${formData["시공일자"]}
-2. 시공팀원 : ${formData["시공팀원"]}
-3. 지역 : ${formData["지역"]}
-4. 아파트명 : ${formData["아파트명"]}
-5. 동 호수 : ${formData["동호수"]}
-6. 연락처 : ${formData["연락처"]}
-7. 평수 : ${formData["평수"]}
-8. 시공범위 : ${formData["시공범위"]}
-9. 신축여부 : ${formData["신축여부"]}
-10. 결제방법 : ${formData["결제방법"]}
-11. 색상 : ${formData["색상"]}
-12. 판매갯수 : ${formData["판매갯수"]}
-13. 판매비용 : ${formData["판매비용"]}
-14. 미결제금액 : ${formData["미결제금액"]}
-15. 예약금 현금영수증 : ${formData["예약금현금영수증"]}
-16. 특이사항 : ${formData["특이사항"]}`;
-
-            document.getElementById("result").value = resultText;
-
-            // 전송
-            await fetch("https://script.google.com/macros/s/AKfycby119oVD0icliswYwGPHPlvaJSPFavbvvTEaXiCL9ngk4HxXrML_O27dNUUMpews26u/exec", {
-                method: "POST",
-                body: JSON.stringify(formData),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            alert("엑셀 시트로 전송되었습니다!");
-        }
-
-        function copyToClipboard() {
-            const result = document.getElementById("result");
-            result.select();
-            document.execCommand("copy");
-            alert("복사 완료!");
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>시공보고서 작성</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1>시공보고서 작성</h1>
-    <form onsubmit="event.preventDefault(); sendToSheet();">
-        <div><label>시공팀원:<br><input type="text" id="시공팀원"></label></div>
-        <div><label>지역:<br><input type="text" id="지역"></label></div>
-        <div><label>아파트명:<br><input type="text" id="아파트명"></label></div>
-        <div><label>동호수:<br><input type="text" id="동호수"></label></div>
-        <div><label>연락처:<br><input type="text" id="연락처"></label></div>
-        <div><label>평수:<br><input type="text" id="평수"></label></div>
-        <div><label>시공범위:<br><input type="text" id="시공범위"></label></div>
-        <div><label>신축여부:<br><input type="text" id="신축여부"></label></div>
-        <div><label>결제방법:<br><input type="text" id="결제방법"></label></div>
-        <div><label>색상:<br><select id="색상">
-            <option value="모던">모던</option>
-            <option value="마블">마블</option>
-            <option value="우드">우드</option>
-        </select></label></div>
-        <div><label>판매갯수:<br><input type="text" id="판매갯수"></label></div>
-        <div><label>판매비용:<br><input type="text" id="판매비용"></label></div>
-        <div><label>미결제금액:<br><input type="text" id="미결제금액"></label></div>
-        <div><label>예약금현금영수증:<br><input type="text" id="예약금현금영수증"></label></div>
-        <div><label>특이사항:<br><textarea id="특이사항"></textarea></label></div>
-        <button type="submit">엑셀시트로 전송</button>
-    </form>
-    <br>
-    <textarea id="result" rows="16" cols="50" placeholder="결과 미리보기"></textarea><br>
-    <button onclick="copyToClipboard()">복사하기</button>
+  <h1>시공보고서 작성</h1>
+  <form id="reportForm">
+    <label>1. 시공팀원</label><input type="text" name="시공팀원" /><br />
+    <label>2. 지역</label><input type="text" name="지역" /><br />
+    <label>3. 아파트명</label><input type="text" name="아파트명" /><br />
+    <label>4. 동 호수</label><input type="text" name="동호수" /><br />
+    <label>5. 연락처</label><input type="text" name="연락처" /><br />
+    <label>6. 평수</label><input type="text" name="평수" /><br />
+    <label>7. 시공범위</label><input type="text" name="시공범위" /><br />
+    <label>8. 신축여부</label><input type="text" name="신축여부" /><br />
+    <label>9. 결제방법</label><input type="text" name="결제방법" /><br />
+    <label>10. 색상</label>
+    <select name="색상">
+      <option value="모던">모던</option>
+      <option value="마블">마블</option>
+      <option value="우드">우드</option>
+    </select><br />
+    <label>11. 판매갯수</label><input type="text" name="판매갯수" /><br />
+    <label>12. 판매비용</label><input type="text" name="판매비용" /><br />
+    <label>13. 미결제금액</label><input type="text" name="미결제금액" /><br />
+    <label>14. 예약금 현금영수증</label><input type="text" name="예약금현금영수증" /><br />
+    <label>15. 특이사항</label><input type="text" name="특이사항" /><br /><br />
+    <button type="button" onclick="generateReport()">결과 보기</button>
+    <button type="button" onclick="copyResult()">복사하기</button>
+    <button type="button" onclick="sendToSheet()">엑셀시트 보내기</button>
+  </form>
+  <pre id="result"></pre>
+  <script src="script.js"></script>
 </body>
 </html>
