@@ -76,6 +76,7 @@ export default function Home() {
             <select name={key} value={value} onChange={handleChange} className="w-full border p-2 rounded">
               <option value="모던">모던</option>
               <option value="마블">마블</option>
+              <option value="코튼베이지">코튼베이지</option>
               <option value="우드">우드</option>
             </select>
           ) : (
