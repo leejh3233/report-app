@@ -60,11 +60,11 @@ function copyResult() {
 async function sendToSheet() {
   const { obj } = getFormData();
 
-  // 추천인 유효성 검사 (목록에 있는 이름만 가능)
+  // 추천인 유효성 검사 (목록이 로드된 경우에만 목록 내 이름인지 확인)
   const datalist = document.getElementById('recommenderList');
   const validOptions = Array.from(datalist.options).map(opt => opt.value);
-  if (obj.추천인 && !validOptions.includes(obj.추천인)) {
-    alert("추천인은 반드시 목록에서 선택해야 합니다.");
+  if (obj.추천인 && validOptions.length > 0 && !validOptions.includes(obj.추천인)) {
+    alert("알림: 추천인 이름이 정확하지 않습니다. 목록에서 선택해 주세요.");
     return;
   }
 
@@ -81,9 +81,14 @@ async function sendToSheet() {
       body: JSON.stringify(obj)
     });
 
-    // 2. 인센티브 시트(dolbomconnect) 업데이트
-    if (window.syncService && window.syncService.syncToIncentiveSheet) {
-      await window.syncService.syncToIncentiveSheet(obj);
+    // 2. 인센티브 시트(dolbomconnect) 업데이트 (추천인이 있는 경우에만 실행)
+    if (obj.추천인 && window.syncService && window.syncService.syncToIncentiveSheet) {
+      const syncResult = await window.syncService.syncToIncentiveSheet(obj);
+      if (syncResult && syncResult.error) {
+        console.warn("인센티브 시트 업데이트 실패:", syncResult.error);
+        alert("알림: 시공 보고서는 전송되었으나, 인센티브 시트 업데이트에 실패했습니다. (추천인 정보 불일치 등)");
+        return; // 앱 시트 전송은 이미 되었으므로 여기서 멈춤
+      }
     }
 
     alert("엑셀 시트로 전송 및 인센티브 업데이트가 완료되었습니다.");
