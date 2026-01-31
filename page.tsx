@@ -86,8 +86,8 @@ export default function Home() {
       시공범위: selectedScopes.join(", ")
     };
 
-    // 1. 엑셀 시트 전송 (Apps Script)
-    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzITllVlYaPqmfoT7eVPd1nSDl31uiaQFO9VFILQeBo_swAUNScMOKM_F_c9iz7TbKI/exec";
+    // 1. 엑셀 시트 전송 (Apps Script) - 기존 page.tsx에 있던 주소로 원복
+    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbxtxy3sgN6uoe5d3bckcmkq41oBryjoXul9MvvaBU6NI_hOfZdGReWtmaArDSCQS8Ba/exec";
 
     try {
       // mode: 'no-cors' for Apps Script
@@ -167,8 +167,8 @@ export default function Home() {
                 key={scope}
                 onClick={() => handleScopeChange(scope)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedScopes.includes(scope)
-                    ? "bg-blue-600 text-white shadow-md scale-105"
-                    : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
+                  ? "bg-blue-600 text-white shadow-md scale-105"
+                  : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
                   }`}
               >
                 {scope}
