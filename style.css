@@ -1,47 +1,72 @@
-
 body {
   font-family: sans-serif;
   padding: 20px;
   max-width: 600px;
   margin: auto;
 }
+
 label {
   font-weight: bold;
   display: block;
   margin-top: 10px;
 }
-input, select {
+
+input,
+select {
   width: 100%;
   padding: 5px;
   margin-bottom: 10px;
 }
+
 button {
   margin: 5px;
   padding: 10px;
 }
+
 pre {
   background: #f4f4f4;
   padding: 10px;
   white-space: pre-wrap;
 }
+
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  gap: 8px;
+  padding: 12px;
+  background: #fdfdfd;
+  border: 1px solid #eee;
+  border-radius: 8px;
 }
+
 .inline-label {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 25px;
   font-weight: normal;
   margin-top: 0;
   cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  font-size: 14px;
 }
+
+.inline-label:hover {
+  background: #e8e8e8;
+}
+
+/* 체크박스가 선택되었을 때의 스타일 */
+.inline-label:has(input:checked) {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+
 .inline-label input {
-  width: auto;
-  margin-right: 5px;
-  margin-bottom: 0;
+  display: none;
+  /* 실제 체크박스는 숨기고 라벨을 버튼처럼 사용 */
 }
