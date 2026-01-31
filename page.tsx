@@ -86,8 +86,8 @@ export default function Home() {
       시공범위: selectedScopes.join(", ")
     };
 
-    // 1. 엑셀 시트 전송 (Apps Script) - 기존 page.tsx에 있던 주소로 원복
-    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbxtxy3sgN6uoe5d3bckcmkq41oBryjoXul9MvvaBU6NI_hOfZdGReWtmaArDSCQS8Ba/exec";
+    // 1. 엑셀 시트 전송 (Apps Script) - 사용자님께서 주신 최신 주소로 업데이트
+    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzITllVlYaPqmfoT7eVPd1nSDl31uiaQFO9VFILQeBo_swAUNScMOKM_F_c9iz7TbKI/exec";
 
     try {
       // mode: 'no-cors' for Apps Script
@@ -102,22 +102,25 @@ export default function Home() {
       let syncMsg = "";
       if (form.추천인) {
         try {
+          // 판매비용에서 콤마(,) 제거 (숫자만 추출)
+          const cleanSaleAmount = form.판매비용.toString().replace(/,/g, '');
+
           const syncRes = await fetch("https://dolbomconnect.vercel.app/api/sync/report", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               recommender: form.추천인,
-              saleAmount: form.판매비용
+              saleAmount: cleanSaleAmount
             })
           });
           const syncData = await syncRes.json();
           if (syncData.success) {
-            syncMsg = "\n✅ 인센티브 시트 연동 성공!";
+            syncMsg = "\n✅ 인센티브 시트 연동 성공! (정산 목록 업데이트 완료)";
           } else {
-            syncMsg = "\n⚠️ 인센티브 연동 실패: " + (syncData.error || "알 수 없는 오류");
+            syncMsg = "\n⚠️ 인센티브 연동 실패: " + (syncData.error === "No matching recommender found in Leads sheet" ? "해당 추천인의 상담 내역을 찾을 수 없습니다." : syncData.error);
           }
         } catch (e) {
-          syncMsg = "\n⚠️ 인센티브 연동 서버 오류";
+          syncMsg = "\n⚠️ 인센티브 연동 서버 오류 (주소 설정을 확인해주세요)";
         }
       }
 
