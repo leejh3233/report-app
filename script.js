@@ -60,20 +60,20 @@ function copyResult() {
 async function sendToSheet() {
   const { obj } = getFormData();
 
-  // 추천인 유효성 검사 (목록이 로드된 경우에만 목록 내 이름인지 확인)
+  // 1. 추천인 유효성 체크 (로드가 된 경우에만 명단 확인, 틀려도 전송은 가능하게 안내)
   const datalist = document.getElementById('recommenderList');
   const validOptions = Array.from(datalist.options).map(opt => opt.value);
   if (obj.추천인 && validOptions.length > 0 && !validOptions.includes(obj.추천인)) {
-    alert("알림: 추천인 이름이 정확하지 않습니다. 목록에서 선택해 주세요.");
-    return;
+    if (!confirm("알림: 추천인 이름이 명단에 없습니다. 오타일 경우 인센티브 정산이 누락될 수 있습니다. 그래도 전송하시겠습니까?")) {
+      return;
+    }
   }
 
-  // 1. 기존 데이터 구조 (B~P) 유지 + Q열에 추천인 저장
-  // 이 부분은 Apps Script backend (Code.gs)에서 처리해야 함. 
-  // 프론트엔드에서는 전체 obj를 보냄.
+  // 2. [필환] 시공 보고서 엑셀 전송 (이것은 항상 실행됨)
   const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzITllVlYaPqmfoT7eVPd1nSDl31uiaQFO9VFILQeBo_swAUNScMOKM_F_c9iz7TbKI/exec";
 
   try {
+    // 엑셀 시트 전송 시도
     fetch(appsScriptUrl, {
       method: "POST",
       mode: "no-cors",
@@ -81,19 +81,21 @@ async function sendToSheet() {
       body: JSON.stringify(obj)
     });
 
-    // 2. 인센티브 시트(dolbomconnect) 업데이트 (추천인이 있는 경우에만 실행)
+    // 3. [선택] 인센티브 시트(dolbomconnect) 업데이트
+    let syncStatusMsg = "";
     if (obj.추천인 && window.syncService && window.syncService.syncToIncentiveSheet) {
       const syncResult = await window.syncService.syncToIncentiveSheet(obj);
       if (syncResult && syncResult.error) {
-        console.warn("인센티브 시트 업데이트 실패:", syncResult.error);
-        alert("알림: 시공 보고서는 전송되었으나, 인센티브 시트 업데이트에 실패했습니다. (추천인 정보 불일치 등)");
-        return; // 앱 시트 전송은 이미 되었으므로 여기서 멈춤
+        console.warn("인센티브 동기화 실패:", syncResult.error);
+        syncStatusMsg = "\n\n⚠️ 인센티브 시트 연동 실패: " + (syncResult.error === "Recommender name is required" ? "추천인을 입력해주세요." : "명단에 없는 추천인이거나 일치하는 데이터가 없습니다.");
+      } else {
+        syncStatusMsg = "\n\n✅ 인센티브 시트 연동 성공!";
       }
     }
 
-    alert("엑셀 시트로 전송 및 인센티브 업데이트가 완료되었습니다.");
+    alert("보고서 전송이 완료되었습니다." + syncStatusMsg);
   } catch (error) {
     console.error("전송 오류:", error);
-    alert("전송 중 오류가 발생했습니다.");
+    alert("전송 중 오류가 발생했습니다. (엑셀 시트 확인 필요)");
   }
 }
