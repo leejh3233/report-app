@@ -24,3 +24,24 @@ pre {
   padding: 10px;
   white-space: pre-wrap;
 }
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.inline-label {
+  display: inline-flex;
+  align-items: center;
+  font-weight: normal;
+  margin-top: 0;
+  cursor: pointer;
+}
+.inline-label input {
+  width: auto;
+  margin-right: 5px;
+  margin-bottom: 0;
+}

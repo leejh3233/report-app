@@ -7,7 +7,7 @@ function doPost(e) {
     data["동호수"], data["연락처"], data["평수"], data["시공범위"],
     data["신축여부"], data["결제방법"], data["색상"], data["판매갯수"],
     data["판매비용"], data["미결제금액"], data["예약금현금영수증"],
-    data["특이사항"]
+    data["특이사항"], data["추천인"]
   ]);
   return ContentService.createTextOutput("Success");
 }

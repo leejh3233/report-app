@@ -1,42 +1,68 @@
-
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>시공보고서 작성</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <h1>시공보고서 작성</h1>
   <form id="reportForm">
-    <label>1. 시공일자</label><input type="text" name="시공일자" /><br />
-    <label>2. 시공팀원</label><input type="text" name="시공팀원" /><br />
-    <label>3. 지역</label><input type="text" name="지역" /><br />
-    <label>4. 아파트명</label><input type="text" name="아파트명" /><br />
-    <label>5. 동호수</label><input type="text" name="동호수" /><br />
-    <label>6. 연락처</label><input type="text" name="연락처" /><br />
-    <label>7. 평수</label><input type="text" name="평수" /><br />
-    <label>8. 시공범위</label><input type="text" name="시공범위" /><br />
-    <label>9. 신축여부</label><input type="text" name="신축여부" /><br />
-    <label>10. 결제방법</label><input type="text" name="결제방법" /><br />
-    <label>11. 색상</label>
+    <label>1. 시공일자</label>
+    <input type="date" name="시공일자" id="施工日" /><br />
+
+    <label>2. 추천인</label>
+    <input type="text" name="추천인" id="추천인Input" list="recommenderList" placeholder="추천인을 검색하세요" />
+    <datalist id="recommenderList"></datalist>
+    <br />
+
+    <label>3. 시공팀원</label><input type="text" name="시공팀원" /><br />
+    <label>4. 지역</label><input type="text" name="지역" /><br />
+    <label>5. 아파트명</label><input type="text" name="아파트명" /><br />
+    <label>6. 동호수</label><input type="text" name="동호수" /><br />
+    <label>7. 연락처</label><input type="text" name="연락처" /><br />
+    <label>8. 평수</label><input type="text" name="평수" /><br />
+
+    <label>9. 시공범위</label>
+    <div class="checkbox-group" id="scopeGroup">
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="거실"> 거실</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="복도"> 복도</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="주방"> 주방</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="아일랜드"> 아일랜드</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="아이방"> 아이방</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="안방"> 안방</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="알파룸"> 알파룸</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="방1"> 방1</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="방2"> 방2</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="집전체"> 집전체</label>
+      <label class="inline-label"><input type="checkbox" name="시공범위" value="기타"> 기타</label>
+    </div>
+    <br />
+
+    <label>10. 신축여부</label><input type="text" name="신축여부" /><br />
+    <label>11. 결제방법</label><input type="text" name="결제방법" /><br />
+    <label>12. 색상</label>
     <select name="색상">
       <option value="모던">모던</option>
       <option value="마블">마블</option>
       <option value="코튼베이지">코튼베이지</option>
       <option value="우드">우드</option>
     </select><br />
-    <label>12. 판매갯수</label><input type="text" name="판매갯수" /><br />
-    <label>13. 판매비용</label><input type="text" name="판매비용" /><br />
-    <label>14. 미결제금액</label><input type="text" name="미결제금액" /><br />
-    <label>15. 예약금 현금영수증</label><input type="text" name="예약금현금영수증" /><br />
-    <label>16. 특이사항</label><input type="text" name="특이사항" /><br /><br />
+    <label>13. 판매갯수</label><input type="text" name="판매갯수" /><br />
+    <label>14. 판매비용</label><input type="text" name="판매비용" /><br />
+    <label>15. 미결제금액</label><input type="text" name="미결제금액" /><br />
+    <label>16. 예약금 현금영수증</label><input type="text" name="예약금현금영수증" /><br />
+    <label>17. 특이사항</label><input type="text" name="특이사항" /><br /><br />
     <button type="button" onclick="generateReport()">결과 보기</button>
     <button type="button" onclick="copyResult()">복사하기</button>
     <button type="button" onclick="sendToSheet()">엑셀시트 보내기</button>
   </form>
   <pre id="result"></pre>
+  <script src="syncService.js"></script>
   <script src="script.js"></script>
 </body>
+
 </html>
