@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 
 export default function Home() {
   const [partners, setPartners] = useState<string[]>([]);
+  const [aptList, setAptList] = useState<any[]>([]); // { aptName, dong, contact, pyeong, saleAmount }
   const [form, setForm] = useState({
     시공일자: new Date().toISOString().slice(0, 10),
-    추천인: "",
+    추천인: "없음",
     시공팀원: "",
     지역: "",
     아파트명: "",
@@ -25,15 +26,63 @@ export default function Home() {
   const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
   const scopes = ["거실", "복도", "주방", "아일랜드", "아이방", "안방", "알파룸", "방1", "방2", "집전체", "기타"];
 
+  // 추천인 목록 가져오기 (통합 엔드포인트 사용)
   useEffect(() => {
-    // 파트너 목록 가져오기
-    fetch("https://dolbomconnect.vercel.app/api/partners/list")
-      .then(res => res.json())
-      .then(data => {
-        if (data.partners) setPartners(data.partners);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://dolbomconnect.vercel.app";
+    console.log("시도 중인 백엔드 주소:", backendUrl);
+
+    fetch(`${backendUrl}/api/leads?type=partners`, {
+      method: 'GET',
+      mode: 'cors'
+    })
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP 에러! 상태코드: ${res.status}`);
+        return res.json();
       })
-      .catch(err => console.error("명단 로드 실패:", err));
+      .then(data => {
+        if (data.partners) {
+          setPartners(["없음", ...data.partners.filter((p: string) => p !== "없음")]);
+        }
+      })
+      .catch(err => {
+        console.error("명단 로드 실패:", err);
+        // 사용자 알림은 유지하되, partners 상태를 빈 배열로 두지 않고 기본값 '없음'은 유지
+        setPartners(prev => prev.length === 0 ? ["없음"] : prev);
+        alert(`⚠️ 추천인 명단을 불러오지 못했습니다.\n연결 시도 주소: ${backendUrl}/api/leads?type=partners\n오류 내용: ${err.message}\n\nVercel 빌드 상태와 환경 변수 설정을 확인해 주세요.`);
+      });
   }, []);
+
+  // 추천인 선택 시 해당 추천인의 '예약완료' 아파트 목록 가져오기 (통합 엔드포인트 사용)
+  useEffect(() => {
+    const recommender = form.추천인.trim();
+    if (recommender && recommender !== "없음") {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://dolbomconnect.vercel.app";
+      fetch(`${backendUrl}/api/leads?type=apartments&recommender=${encodeURIComponent(recommender)}`, {
+        method: 'GET',
+        mode: 'cors'
+      })
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP 에러! 상태코드: ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          if (data.apartments) {
+            setAptList(data.apartments);
+          }
+        })
+        .catch(err => {
+          console.error("아파트 목록 로드 실패:", err);
+          setAptList([]);
+        });
+    } else {
+      setAptList([]);
+    }
+  }, [form.추천인]);
+
+  const handleAptChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedAptName = e.target.value;
+    setForm(prev => ({ ...prev, 아파트명: selectedAptName }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -74,50 +123,51 @@ export default function Home() {
   };
 
   const handleSend = async () => {
-    // 추천인 유효성 체크
     if (form.추천인 && partners.length > 0 && !partners.includes(form.추천인)) {
       if (!confirm("알림: 추천인 이름이 명단에 없습니다. 오타일 경우 인센티브 정산이 누락될 수 있습니다. 그래도 전송하시겠습니까?")) {
         return;
       }
     }
 
-    const finalData = {
-      ...form,
-      시공범위: selectedScopes.join(", ")
-    };
-
-    // 1. 엑셀 시트 전송 (Apps Script) - 사용자님께서 주신 최신 주소로 업데이트
+    const cleanSaleAmount = form.판매비용.toString().replace(/,/g, '');
     const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzITllVlYaPqmfoT7eVPd1nSDl31uiaQFO9VFILQeBo_swAUNScMOKM_F_c9iz7TbKI/exec";
 
     try {
-      // mode: 'no-cors' for Apps Script
+      // 1. 엑셀 시트 전송 (Apps Script)
       fetch(appsScriptUrl, {
         method: "POST",
         mode: "no-cors",
-        body: JSON.stringify(finalData),
+        body: JSON.stringify({
+          ...form,
+          추천인: form.추천인 === "없음" ? "" : form.추천인,
+          시공범위: selectedScopes.join(", ")
+        }),
         headers: { "Content-Type": "application/json" },
       });
 
-      // 2. 인센티브 시트 연동 (dolbomconnect)
+      // 2. 인센티브 시트 연동 (dolbomconnect 통합 엔드포인트 POST)
       let syncMsg = "";
-      if (form.추천인) {
+      if (form.추천인 && form.추천인 !== "없음") {
         try {
-          // 판매비용에서 콤마(,) 제거 (숫자만 추출)
-          const cleanSaleAmount = form.판매비용.toString().replace(/,/g, '');
-
-          const syncRes = await fetch("https://dolbomconnect.vercel.app/api/sync/report", {
+          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://dolbomconnect.vercel.app";
+          const syncRes = await fetch(`${backendUrl}/api/leads`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               recommender: form.추천인,
-              saleAmount: cleanSaleAmount
+              aptName: form.아파트명,
+              saleAmount: cleanSaleAmount,
+              area: form.지역,
+              pyeong: form.평수,
+              scope: selectedScopes.join(", "),
+              source: "현장시공"
             })
           });
           const syncData = await syncRes.json();
           if (syncData.success) {
             syncMsg = "\n✅ 인센티브 시트 연동 성공! (정산 목록 업데이트 완료)";
           } else {
-            syncMsg = "\n⚠️ 인센티브 연동 실패: " + (syncData.error === "No matching recommender found in Leads sheet" ? "해당 추천인의 상담 내역을 찾을 수 없습니다." : syncData.error);
+            syncMsg = "\n⚠️ 인센티브 연동 실패: " + syncData.error;
           }
         } catch (e) {
           syncMsg = "\n⚠️ 인센티브 연동 서버 오류 (주소 설정을 확인해주세요)";
@@ -148,10 +198,26 @@ export default function Home() {
           </datalist>
         </div>
 
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">5. 아파트명 (선택 시 자동완성)</label>
+          <select
+            name="아파트명"
+            value={form.아파트명}
+            onChange={handleAptChange}
+            className="w-full border-2 border-gray-200 p-3 rounded-lg focus:border-blue-500 outline-none transition-all bg-white"
+          >
+            <option value="">아파트를 선택하세요</option>
+            {aptList.map((apt, idx) => (
+              <option key={idx} value={apt.aptName}>
+                {apt.aptName} ({apt.dong})
+              </option>
+            ))}
+          </select>
+        </div>
+
         {[
           { label: "3. 시공팀원", name: "시공팀원" },
           { label: "4. 지역", name: "지역" },
-          { label: "5. 아파트명", name: "아파트명" },
           { label: "6. 동호수", name: "동호수" },
           { label: "7. 연락처", name: "연락처" },
           { label: "8. 평수", name: "평수" }
